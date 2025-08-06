@@ -40,7 +40,15 @@ export default defineConfig({
     // Increase chunk size warning limit
     chunkSizeWarningLimit: 1000,
     // Ensure compatibility with older browsers
-    target: 'es2015'
+    target: 'es2015',
+    // Optimize for production
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    }
   },
   define: {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),

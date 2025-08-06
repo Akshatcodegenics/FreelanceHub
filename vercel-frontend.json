@@ -1,0 +1,45 @@
+{
+  "version": 2,
+  "name": "freelancehub-frontend",
+  "buildCommand": "cd client && npm install && npm run build",
+  "outputDirectory": "client/dist",
+  "installCommand": "npm install",
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://freelancehub-server.vercel.app/api/$1"
+    },
+    {
+      "source": "/socket.io/(.*)",
+      "destination": "https://freelancehub-server.vercel.app/socket.io/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ],
+  "env": {
+    "VITE_API_URL": "https://freelancehub-server.vercel.app/api",
+    "VITE_SOCKET_URL": "https://freelancehub-server.vercel.app"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "name": "FreelanceHub",
+  "description": "A comprehensive freelance marketplace platform with enhanced messaging features",
+  "repository": "https://github.com/Akshatcodegenics/FreelanceHub",
+  "logo": "https://freelancehub.com/logo.png",
+  "keywords": ["freelance", "marketplace", "react", "nodejs", "express", "mongodb"],
+  "stack": "heroku-22",
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ],
+  "env": {
+    "NODE_ENV": {
+      "description": "Node environment",
+      "value": "production"
+    },
+    "MONGODB_URI": {
+      "description": "MongoDB connection string",
+      "required": true
+    },
+    "JWT_SECRET": {
+      "description": "JWT secret key",
+      "generator": "secret"
+    },
+    "CLIENT_URL": {
+      "description": "Frontend URL",
+      "value": "https://your-app-name.herokuapp.com"
+    },
+    "CLOUDINARY_CLOUD_NAME": {
+      "description": "Cloudinary cloud name",
+      "required": false
+    },
+    "CLOUDINARY_API_KEY": {
+      "description": "Cloudinary API key",
+      "required": false
+    },
+    "CLOUDINARY_API_SECRET": {
+      "description": "Cloudinary API secret",
+      "required": false
+    },
+    "STRIPE_SECRET_KEY": {
+      "description": "Stripe secret key",
+      "required": false
+    },
+    "STRIPE_PUBLISHABLE_KEY": {
+      "description": "Stripe publishable key",
+      "required": false
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "basic"
+    }
+  },
+  "addons": [
+    {
+      "plan": "mongolab:sandbox"
+    }
+  ],
+  "scripts": {
+    "postdeploy": "echo 'Deployment completed successfully!'"
+  }
+}

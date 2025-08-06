@@ -1,37 +1,39 @@
 {
   "version": 2,
-  "name": "freelancehub",
+  "name": "freelancehub-server",
   "builds": [
     {
-      "src": "server/server.js",
+      "src": "server.js",
       "use": "@vercel/node",
       "config": {
         "maxLambdaSize": "50mb"
-      }
-    },
-    {
-      "src": "client/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
       }
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "server/server.js"
+      "dest": "/server.js"
     },
     {
       "src": "/socket.io/(.*)",
-      "dest": "server/server.js"
+      "dest": "/server.js"
+    },
+    {
+      "src": "/health",
+      "dest": "/server.js"
     },
     {
       "src": "/(.*)",
-      "dest": "client/dist/$1"
+      "dest": "/server.js"
     }
   ],
   "env": {
     "NODE_ENV": "production"
+  },
+  "functions": {
+    "server.js": {
+      "maxDuration": 30
+    }
   }
 }
