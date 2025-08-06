@@ -41,11 +41,13 @@
     "prettier": "^3.0.3",
     "prettier-plugin-tailwindcss": "^0.5.4",
     "tailwindcss": "^3.3.3",
+    "terser": "^5.43.1",
     "vite": "^4.4.9"
   },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:vercel": "vite build --config vite.config.vercel.js",
     "build:prod": "node build.js",
     "build:analyze": "vite build --mode analyze",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",

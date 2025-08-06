@@ -1,7 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vitejs.dev/config/
+// Vercel-optimized Vite configuration
+// This configuration avoids Terser dependency issues on Vercel
 export default defineConfig({
   plugins: [react()],
   server: {
@@ -39,15 +40,19 @@ export default defineConfig({
     },
     // Increase chunk size warning limit
     chunkSizeWarningLimit: 1000,
+    // Use esbuild for minification (faster and more compatible)
+    minify: 'esbuild',
     // Ensure compatibility with older browsers
-    target: 'es2015',
-    // Optimize for production - use esbuild for better compatibility
-    minify: 'esbuild'
+    target: 'es2015'
   },
   define: {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
     global: 'globalThis'
   },
   // Ensure proper handling of environment variables
-  envPrefix: 'VITE_'
+  envPrefix: 'VITE_',
+  // Optimize dependencies
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom', 'axios']
+  }
 })

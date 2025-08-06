@@ -43,20 +43,31 @@ check_vercel_cli() {
 # Deploy frontend
 deploy_frontend() {
     print_status "Deploying frontend to Vercel..."
-    
+
     # Copy frontend configuration
     cp vercel-frontend.json vercel.json
-    
+
+    # Ensure Terser is installed for build compatibility
+    print_status "Installing frontend dependencies..."
+    cd client
+    npm ci
+
+    # Test build locally first
+    print_status "Testing build locally..."
+    npm run build:vercel
+
+    cd ..
+
     # Set environment variables for frontend
     print_status "Setting frontend environment variables..."
     vercel env add VITE_API_URL production
     vercel env add VITE_SOCKET_URL production
     vercel env add VITE_STRIPE_PUBLISHABLE_KEY production
-    
+
     # Deploy frontend
-    print_status "Building and deploying frontend..."
+    print_status "Deploying frontend to Vercel..."
     vercel --prod --yes
-    
+
     print_success "Frontend deployed successfully!"
 }
 

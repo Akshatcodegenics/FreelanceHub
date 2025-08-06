@@ -1,7 +1,7 @@
 {
   "version": 2,
   "name": "freelancehub-frontend",
-  "buildCommand": "cd client && npm install && npm run build",
+  "buildCommand": "cd client && npm ci && npm run build:vercel",
   "outputDirectory": "client/dist",
   "installCommand": "npm install",
   "framework": null,
