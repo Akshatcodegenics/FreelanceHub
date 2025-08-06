@@ -1,12 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import EmojiPicker from 'emoji-picker-react';
-import { 
-  FiSend, 
-  FiPaperclip, 
-  FiMic, 
-  FiVideo, 
-  FiSmile, 
+import { useVoiceRecording } from '../../hooks/useVoiceRecording';
+import {
+  FiSend,
+  FiPaperclip,
+  FiMic,
+  FiVideo,
+  FiSmile,
   FiDollarSign,
   FiMail,
   FiX,
@@ -14,25 +15,34 @@ import {
   FiImage
 } from 'react-icons/fi';
 
-const EnhancedMessageInput = ({ 
-  onSendMessage, 
-  onSendFile, 
-  onSendVoice, 
+const EnhancedMessageInput = ({
+  onSendMessage,
+  onSendFile,
+  onSendVoice,
   onSendPaymentRequest,
   disabled = false,
-  conversationId 
+  conversationId
 }) => {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('text');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordingTime, setRecordingTime] = useState(0);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
-  
+
   const fileInputRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
-  const recordingIntervalRef = useRef(null);
+
+  // Use custom voice recording hook
+  const {
+    isRecording,
+    recordingTime,
+    audioBlob,
+    isSupported: voiceSupported,
+    error: voiceError,
+    startRecording,
+    stopRecording,
+    formatTime,
+    clearRecording
+  } = useVoiceRecording();
 
   // Dropzone for drag and drop
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -71,46 +81,29 @@ const EnhancedMessageInput = ({
     setShowAttachmentMenu(false);
   };
 
-  const startVoiceRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      
-      const chunks = [];
-      mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-      
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(chunks, { type: 'audio/webm' });
-        onSendVoice(blob, recordingTime);
-        stream.getTracks().forEach(track => track.stop());
-      };
+  const handleVoiceRecordingStart = async () => {
+    if (!voiceSupported) {
+      console.error('Voice recording not supported');
+      return;
+    }
 
-      mediaRecorder.start();
-      setIsRecording(true);
-      setRecordingTime(0);
-      
-      recordingIntervalRef.current = setInterval(() => {
-        setRecordingTime(prev => prev + 1);
-      }, 1000);
-    } catch (error) {
-      console.error('Error starting voice recording:', error);
+    const success = await startRecording();
+    if (!success && voiceError) {
+      console.error('Failed to start recording:', voiceError);
     }
   };
 
-  const stopVoiceRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-      clearInterval(recordingIntervalRef.current);
-    }
+  const handleVoiceRecordingStop = () => {
+    stopRecording();
   };
 
-  const formatRecordingTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
+  // Handle sending voice message when audioBlob is available
+  React.useEffect(() => {
+    if (audioBlob && !isRecording) {
+      onSendVoice(audioBlob, recordingTime);
+      clearRecording();
+    }
+  }, [audioBlob, isRecording, recordingTime, onSendVoice, clearRecording]);
 
   const AttachmentMenu = () => (
     <div className="absolute bottom-12 left-0 bg-white rounded-lg shadow-lg border border-gray-200 p-2 z-10">
@@ -256,14 +249,21 @@ const EnhancedMessageInput = ({
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
               <span className="text-red-700 font-medium">Recording...</span>
-              <span className="text-red-600">{formatRecordingTime(recordingTime)}</span>
+              <span className="text-red-600">{formatTime}</span>
             </div>
             <button
-              onClick={stopVoiceRecording}
+              onClick={handleVoiceRecordingStop}
               className="px-3 py-1 bg-red-600 text-white rounded-lg hover:bg-red-700"
             >
               Stop
             </button>
+          </div>
+        )}
+
+        {/* Voice Error Display */}
+        {voiceError && (
+          <div className="mb-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-yellow-700 text-sm">{voiceError}</p>
           </div>
         )}
 
@@ -347,13 +347,16 @@ const EnhancedMessageInput = ({
           {/* Voice Message Button */}
           <button
             type="button"
-            onClick={isRecording ? stopVoiceRecording : startVoiceRecording}
+            onClick={isRecording ? handleVoiceRecordingStop : handleVoiceRecordingStart}
             className={`p-2 rounded-lg transition-colors ${
-              isRecording 
-                ? 'bg-red-600 text-white' 
-                : 'text-gray-400 hover:text-gray-600'
+              isRecording
+                ? 'bg-red-600 text-white'
+                : voiceSupported
+                  ? 'text-gray-400 hover:text-gray-600'
+                  : 'text-gray-300 cursor-not-allowed'
             }`}
-            disabled={disabled}
+            disabled={disabled || !voiceSupported}
+            title={voiceSupported ? 'Record voice message' : 'Voice recording not supported'}
           >
             <FiMic className="w-5 h-5" />
           </button>
