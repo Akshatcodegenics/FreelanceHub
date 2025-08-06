@@ -56,10 +56,22 @@ const EnhancedMessages = () => {
 
   const initializeSocket = () => {
     const token = localStorage.getItem('token');
-    const socketUrl = import.meta.env.VITE_SOCKET_URL || window.location.origin;
+
+    // Get socket URL with fallback logic
+    let socketUrl;
+    if (import.meta.env.VITE_SOCKET_URL) {
+      socketUrl = import.meta.env.VITE_SOCKET_URL;
+    } else if (import.meta.env.PROD) {
+      socketUrl = window.location.origin;
+    } else {
+      socketUrl = 'http://localhost:8000';
+    }
+
     socketRef.current = io(socketUrl, {
       auth: { token },
-      transports: ['websocket', 'polling']
+      transports: ['websocket', 'polling'],
+      timeout: 20000,
+      forceNew: true
     });
 
     socketRef.current.on('new_message', (data) => {

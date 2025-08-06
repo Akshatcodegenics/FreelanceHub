@@ -1,10 +1,26 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+// Get API base URL with fallback logic
+const getApiBaseUrl = () => {
+  // Check for environment variable first
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+
+  // Production fallback - use current domain
+  if (import.meta.env.PROD) {
+    return `${window.location.origin}/api`;
+  }
+
+  // Development fallback
+  return '/api';
+};
+
 // Create axios instance
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
-  timeout: 10000,
+  baseURL: getApiBaseUrl(),
+  timeout: 30000, // Increased timeout for production
   headers: {
     'Content-Type': 'application/json',
   },
