@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # FreelanceHub - Advanced Freelance Marketplace Platform
 
 A comprehensive full-stack freelance marketplace application similar to Fiverr/Upwork, built with React.js and Node.js. Features an advanced messaging system with WhatsApp-like capabilities, file sharing, voice messages, and integrated payment requests.
@@ -235,3 +236,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Enhanced messaging inspired by WhatsApp
 - Secure payment processing with Stripe
 - Real-time features powered by Socket.io
+
