@@ -56,8 +56,10 @@ const EnhancedMessages = () => {
 
   const initializeSocket = () => {
     const token = localStorage.getItem('token');
-    socketRef.current = io(process.env.REACT_APP_API_URL || 'http://localhost:5000', {
-      auth: { token }
+    const socketUrl = import.meta.env.VITE_SOCKET_URL || window.location.origin;
+    socketRef.current = io(socketUrl, {
+      auth: { token },
+      transports: ['websocket', 'polling']
     });
 
     socketRef.current.on('new_message', (data) => {

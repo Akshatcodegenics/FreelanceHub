@@ -1,0 +1,53 @@
+{
+  "name": "freelancehub",
+  "version": "1.0.0",
+  "description": "A comprehensive freelance marketplace platform with enhanced messaging features",
+  "main": "server/server.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "start": "node start.js",
+    "build": "npm run client:build",
+    "server:dev": "cd server && npm run dev",
+    "server:start": "cd server && npm start",
+    "client:dev": "cd client && npm run dev",
+    "client:build": "cd client && npm run build",
+    "install:all": "npm run install:server && npm run install:client",
+    "install:server": "cd server && npm install",
+    "install:client": "cd client && npm install",
+    "test": "npm run test:server && npm run test:client",
+    "test:server": "cd server && npm test",
+    "test:client": "cd client && npm test",
+    "deploy": "chmod +x deploy.sh && ./deploy.sh",
+    "deploy:docker": "chmod +x deploy.sh && ./deploy.sh --docker",
+    "health": "curl -f http://localhost:8000/api/health || exit 1",
+    "postinstall": "npm run install:all"
+  },
+  "keywords": [
+    "freelance",
+    "marketplace",
+    "react",
+    "nodejs",
+    "express",
+    "mongodb",
+    "socket.io",
+    "messaging",
+    "payments"
+  ],
+  "author": "Akshat",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Akshatcodegenics/FreelanceHub.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Akshatcodegenics/FreelanceHub/issues"
+  },
+  "homepage": "https://github.com/Akshatcodegenics/FreelanceHub#readme",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}

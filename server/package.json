@@ -6,8 +6,10 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "build": "echo 'Server build complete'",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "postinstall": "npm run build"
   },
   "keywords": [
     "freelance",

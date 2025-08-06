@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: freelancehub-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: freelancehub
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - freelancehub-network
+
+  # FreelanceHub Application
+  app:
+    build: .
+    container_name: freelancehub-app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+      - PORT=8000
+      - MONGODB_URI=mongodb://admin:password123@mongodb:27017/freelancehub?authSource=admin
+      - JWT_SECRET=your-super-secret-jwt-key-for-production
+      - JWT_EXPIRE=7d
+      - CLIENT_URL=http://localhost:8000
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
+    depends_on:
+      - mongodb
+    networks:
+      - freelancehub-network
+    volumes:
+      - ./server/uploads:/app/server/uploads
+
+  # Redis for Session Storage (Optional)
+  redis:
+    image: redis:7-alpine
+    container_name: freelancehub-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - freelancehub-network
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mongodb_data:
+  redis_data:
+
+networks:
+  freelancehub-network:
+    driver: bridge
